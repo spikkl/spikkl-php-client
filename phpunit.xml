@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpunit colors="true" bootstrap="./vendor/autoload.php">
+    <php>
+        <ini name="display_errors" value="stderr" />
+        <ini name="error_log" value="/dev/null" />
+    </php>
+    <testsuite name="Uni tests">
+        <directory>tests/</directory>
+    </testsuite>
+    <logging>
+        <log type="coverage-html"
+             target="./coverage"
+             lowUpperBound="50"
+             highLowerBound="80" />
+    </logging>
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/</directory>
+        </whitelist>
+    </filter>
+</phpunit>

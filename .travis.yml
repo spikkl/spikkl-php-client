@@ -1,0 +1,40 @@
+language: php
+
+dist: xenial
+
+sudo: false
+
+php:
+    - 5.6
+    - 7.0
+    - 7.1
+    - 7.2
+
+env:
+    - COMPOSER_NO_INTERACTION=1
+
+cache:
+    directories:
+        - $HOME/.composer/cache
+
+install:
+    - travis_retry composer install --no-scripts --no-suggest
+
+script:
+    - composer validate --strict
+    - find src/ examples/ tests/ -type f -name '*.php' -print0 | xargs -0 -L 1 -P 4 php -l
+    - vendor/bin/phpunit
+
+before_deploy:
+    - sed -e "/const CLIENT_VERSION/c\\ const CLIENT_VERSION = '${TRAVIS_TAG:1}';" -i src/ApiClient.php
+    - make spikkl-php-client.zip
+
+deploy:
+    provider: releases
+    api_key:
+        secure: $GITHUB_TOKEN
+    file: spikkl-php-client.zip
+    skip_cleanup: true
+    on:
+        tags: true
+        php: 7.2
