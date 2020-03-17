@@ -32,7 +32,7 @@ before_deploy:
 deploy:
     provider: releases
     api_key:
-        secure: $GITHUB_TOKEN
+        secure: kdwE+qX4aWTaoFW/8Yc5XAy3UHzv3wLyb0hGeQDPg2rNNnFTKva27ACIHuSmsB81d9B7H1CSgIJbgVp9ChpRoLeYBLki8G9jdZkyhBiT/OL6W9e3ZJ6sHA1Fox9SSy/CH+dnRSFMVcyTXNL2G0IJGScrcZW4olt67NxnYoRfV2zYT3eCyeCqRpeMjHS/fZyzklgPlr0BhyEnl+JVdYipLvYdv1q1/29mksnzElnXUpoOw7Ls/LN3Q63pSubIT2hc11V4R3IGc/jZOQKvQzPLZft6T+edm2c/ku5XTq0GVH4vGsjQg8WhuQyTRyk1n0l48T9gn9aEZB3cW5sqfqkvCXCmJ8D6t+fm/9NFw9QUzZA8H+ZF4LgEN7WkyTGFbzDpJ2le14QsPNhFtEk00vY6/v/zAT01numiZaG42m+8d8lB1YEWD3KjTC6dSsCWVrQ2e0n/LkhAy9Quq0CQFHL410GP6XkQBgVLhVj+8KicoHqpujlLE8jDxZ9dfPBHhoIwX8m16yZ76KI7O38XyoD/J7DUZsuCCYh99tZlmCrk+20sR5hhXPMCIQDlxoWJYMRIK2eHq0KE3smWbRscnS79ZMADJtqXXYNSK7GPoOBFyY42i6T8aP9Ser4GgyVO0HiqiAJNp8bNZV0O8E2U8zMGqdP5IPfKGNKmm7NnW8mtS0U=
     file: spikkl-php-client.zip
     skip_cleanup: true
     on:
