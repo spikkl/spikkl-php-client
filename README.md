@@ -17,13 +17,13 @@ To use the Spikkl API client, the following things are required:
 The easiest way to install the Spikkl API client is to require it with [Composer](https://getcomposer.org/doc/00-intro.md).
 
 ```bash
-$ composer require spikkl/spikkl-php-client:^1.0
+$ composer require spikkl/spikkl-php-client:^1.1
 ```
 
 ```json
 {
   "require": {
-    "spikkl/spikkl-php-client": "^1.0"
+    "spikkl/spikkl-php-client": "^1.1"
   }
 }
 ```
@@ -46,10 +46,12 @@ Perform a postal code lookup request.
 $results = $spikkl->lookup("NLD", "2611HB", "175");
 ```
 
-Perform a lookup by coordinate.
+Perform a lookup by coordinate (longitude, latitude).
 ```php
-$results = $spikkl->reverse("NLD", 52.379189, 4.899431);
+$results = $spikkl->reverse("NLD", 4.899431, 52.379189);
 ```
+
+Note: longitude and latitude values will be rounded to 9 decimal places.
 
 ## API documentation ##
 If you wish to learn more about our API, please visit the [Spikkl API Documentation](https://www.spikkl.nl/documentation).
