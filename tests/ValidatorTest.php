@@ -169,19 +169,19 @@ class ValidatorTest extends TestCase
     {
         list($latitude, $longitude) = $this->validator->validateAndNormalizeCoordinate(4.35556, 52.00667);
 
-        $this->assertEquals('4.35556', $latitude);
-        $this->assertEquals('52.00667', $longitude);
+        $this->assertEquals('4.355560000', $latitude);
+        $this->assertEquals('52.006670000', $longitude);
     }
 
     /**
      * @test
      */
-    public function invalid_latitude_throws_exception()
+    public function coordinate_validation_returns_rounded_coordinate()
     {
-        $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Invalid latitude provided [invalid_latitude].');
+        list($latitude, $longitude) = $this->validator->validateAndNormalizeCoordinate(4.355567263736, 52.006674738363);
 
-        $this->validator->validateAndNormalizeCoordinate('invalid_latitude', 52.00667);
+        $this->assertEquals('4.355567264', $latitude);
+        $this->assertEquals('52.006674738', $longitude);
     }
 
     /**
@@ -192,7 +192,18 @@ class ValidatorTest extends TestCase
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('Invalid longitude provided [invalid_longitude].');
 
-        $this->validator->validateAndNormalizeCoordinate(4.35556, 'invalid_longitude');
+        $this->validator->validateAndNormalizeCoordinate('invalid_longitude', 52.00667);
+    }
+
+    /**
+     * @test
+     */
+    public function invalid_latitude_throws_exception()
+    {
+        $this->expectException(ValidationException::class);
+        $this->expectExceptionMessage('Invalid latitude provided [invalid_latitude].');
+
+        $this->validator->validateAndNormalizeCoordinate(4.35556, 'invalid_latitude');
     }
 
     /**

@@ -116,24 +116,26 @@ class Validator
     }
 
     /**
-     * @param string|float $latitude
+     * Validate the coordinate. Length of longitude or latitude is limited to 14 characters.
+     *
      * @param string|float $longitude
+     * @param string|float $latitude
      *
      * @return array
      *
      * @throws ApiException
      */
-    public function validateAndNormalizeCoordinate($latitude, $longitude)
+    public function validateAndNormalizeCoordinate($longitude, $latitude)
     {
-        if ( ! preg_match('/^(\+|-)?((\d((\.)|\.\d{1,6})?)|(0*?[0-8]\d((\.)|\.\d{1,6})?)|(0*?90((\.)|\.0{1,6})?))$/', $latitude)) {
-            throw ValidationException::create("Invalid latitude provided [{$latitude}].");
-        }
-
-        if ( ! preg_match('/^(\+|-)?((\d((\.)|\.\d{1,6})?)|(0*?\d\d((\.)|\.\d{1,6})?)|(0*?1[0-7]\d((\.)|\.\d{1,6})?)|(0*?180((\.)|\.0{1,6})?))$/', $longitude)) {
+        if ( ! preg_match('/^(\+|-)?((\d((\.)|\.\d+)?)|(0*?\d\d((\.)|\.\d+)?)|(0*?1[0-7]\d((\.)|\.\d+)?)|(0*?180((\.)|\.0+)?))$/', $longitude)) {
             throw ValidationException::create("Invalid longitude provided [{$longitude}].");
         }
 
-        return [ trim($latitude), trim($longitude) ];
+        if ( ! preg_match('/^(\+|-)?((\d((\.)|\.\d+)?)|(0*?[0-8]\d((\.)|\.\d+)?)|(0*?90((\.)|\.0+)?))$/', $latitude)) {
+            throw ValidationException::create("Invalid latitude provided [{$latitude}].");
+        }
+
+        return [ number_format($longitude, 9), number_format($latitude, 9) ];
     }
 
     /**

@@ -175,24 +175,24 @@ class ApiClient
 
     /**
      * @param string $countryIso3Code
-     * @param string|float $latitude
      * @param string|float $longitude
+     * @param string|float $latitude
      *
      * @return stdClass
      *
      * @throws ApiException
      */
-    public function reverse($countryIso3Code, $latitude, $longitude)
+    public function reverse($countryIso3Code, $longitude, $latitude)
     {
         $validator = new Validator($countryIso3Code);
-        list($latitude, $longitude) = $validator->validateAndNormalizeCoordinate($latitude, $longitude);
+        list($longitude, $latitude) = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
 
         $response = $this->performRequest(
             'GET',
             strtolower($countryIso3Code) . DIRECTORY_SEPARATOR . 'reverse.json',
             [
-                'latitude' => $latitude,
-                'longitude' => $longitude
+                'longitude' => $longitude,
+                'latitude' => $latitude
             ]
         );
 
