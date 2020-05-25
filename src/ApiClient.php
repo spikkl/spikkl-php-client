@@ -223,7 +223,7 @@ class ApiClient
             'key' => $this->apiKey
         ], $httpParams);
 
-        $userAgent = implode(' ', $this->versionStrings);
+        $userAgent = implode(';', $this->versionStrings);
 
         $headers = [
             'Accept' => 'application/json',
