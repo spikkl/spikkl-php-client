@@ -93,7 +93,7 @@ class ApiClient
     {
         $apiKey = trim($apiKey);
 
-        if ( ! preg_match('/^[0-9a-f]{32}/', $apiKey)) {
+        if ( ! preg_match('/^[0-9a-f]{32}$/', $apiKey)) {
             throw ApiException::create('Invalid api key: "' . $apiKey . '". Your API key should contain alpha-numeric characters only and must be 32 characters long.');
         }
 
