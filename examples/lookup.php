@@ -5,7 +5,7 @@ try {
     // Initialize the Mollie API library with your API key
     require './initialize.php';
 
-    $results = $spikkl->lookup('nld', '2611KL', '15');
+    $results = $spikkl->lookup('nld', '2611HB', '175');
 
     print_r($results);
 

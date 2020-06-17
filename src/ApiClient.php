@@ -133,7 +133,7 @@ class ApiClient
      */
     public function addVersionString($versionString)
     {
-        $this->versionStrings[] = str_replace([ " ", "\t", "\n", "\r"], '-', $versionString);
+        $this->versionStrings[] = str_replace([ " ", "\t", "\n", "\r" ], '-', $versionString);
         return $this;
     }
 
@@ -236,7 +236,7 @@ class ApiClient
             $headers['X-Spikkl-Client-Info'] = php_uname();
         }
 
-        $url = $url . '?' . urldecode(http_build_query($httpParams));
+        $url .= '?'.urldecode(http_build_query($httpParams));
 
         $request = new Request($httpMethod, $url, $headers, $httpBody);
 

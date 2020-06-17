@@ -10,6 +10,14 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class ApiException extends Exception
 {
+    protected const ACCESS_RESTRICTED_STATUS = 'ACCESS_RESTRICTED';
+    protected const INVALID_API_KEY_STATUS = 'INVALID_API_KEY';
+    protected const REVOKED_API_KEY_STATUS = 'REVOKED_API_KEY';
+    protected const INVALID_REQUEST_STATUS = 'INVALID_REQUEST';
+    protected const OUT_OF_RANGE_STATUS = 'OUT_OF_RANGE';
+    protected const QUOTA_REACHED_STATUS = 'QUOTA_REACHED';
+    protected const ZERO_RESULTS_STATUS = 'ZERO_RESULTS';
+
     /**
      * @var ResponseInterface|null;
      */
@@ -65,12 +73,49 @@ class ApiException extends Exception
     {
         $object = static::parseResponseBody($response);
 
-        return new static(
-            "Error executing API call ({$object->status_code}).",
-            $response->getStatusCode(),
-            $response,
-            $previous
-        );
+        if (static::isErrorApiResponse($object)) {
+            switch ($object->status_code) {
+                case self::ACCESS_RESTRICTED_STATUS:
+                    return new AccessRestrictedException('Access restricted for this origin.', $response->getStatusCode(), $response, $previous);
+
+                case self::INVALID_API_KEY_STATUS:
+                    return new InvalidApiKeyException('Invalid API key provided.', $response->getStatusCode(), $response, $previous);
+
+                case self::REVOKED_API_KEY_STATUS:
+                    return new RevokedApiKeyException('Provided API key revoked.', $response->getStatusCode(), $response, $previous);
+
+                case self::ZERO_RESULTS_STATUS:
+                    return new ZeroResultsException('No results found.', $response->getStatusCode(), $response, $previous);
+
+                case self::QUOTA_REACHED_STATUS:
+                    return new QuotaReachedException('No requests left, consider upgrading.', $response->getStatusCode(), $response, $previous);
+
+                case self::OUT_OF_RANGE_STATUS:
+                    return new OutOfRangeException('Provided coordinate not in range.', $response->getStatusCode(), $response, $previous);
+
+                case self::INVALID_REQUEST_STATUS:
+                    return new InvalidRequestException('Invalid parameters provided.', $response->getStatusCode(), $response, $previous);
+            }
+        }
+
+        switch ($response->getStatusCode()) {
+            case 400:
+                return new BadRequestException('Bad request.', $response->getStatusCode(), $response, $previous);
+
+            case 401:
+                return new UnauthorizedException('Unauthorized.', $response->getStatusCode(), $response, $previous);
+
+            case 403:
+                return new AccessDeniedException('Access denied.', $response->getStatusCode(), $response, $previous);
+
+            case 404:
+                return new PageNotFoundException('Not found.', $response->getStatusCode(), $response, $previous);
+
+            case 500:
+                return new ServerErrorException('Server error.', $response->getStatusCode(), $response, $previous);
+        }
+
+        return new static('API Error.', $response->getStatusCode(), $response, $previous);
     }
 
     /**
@@ -112,6 +157,20 @@ class ApiException extends Exception
         }
 
         return $object;
+    }
+
+    /**
+     * Determine if the response contains error data.
+     *
+     * @param stdClass $response
+     *
+     * @return bool
+     */
+    protected static function isErrorApiResponse($response)
+    {
+        return property_exists($response, 'status_code') &&
+               property_exists($response, 'status') &&
+               $response->status === 'failed';
     }
 
     /**

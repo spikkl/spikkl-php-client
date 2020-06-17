@@ -16,4 +16,4 @@ require_once __DIR__ . '/../vendor/autoload.php';
  * @see https://www.spikkl.nl/credentials
  */
 $spikkl = new \Spikkl\Api\ApiClient();
-$spikkl->setApiKey('API_KEY');
+$spikkl->setApiKey('a10cb02f50cded6fa34c98891c3c5777');

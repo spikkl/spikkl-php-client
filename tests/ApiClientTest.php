@@ -98,7 +98,7 @@ class ApiClientTest extends TestCase
     public function perform_http_call_creates_api_exception_correctly()
     {
         $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Error executing API call (INVALID_REQUEST).');
+        $this->expectExceptionMessage('Invalid parameters provided.');
         $this->expectExceptionCode(422);
 
         $response = new Response(422, [], '{
