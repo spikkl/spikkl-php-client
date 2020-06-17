@@ -10,13 +10,13 @@ use GuzzleHttp\Exception\GuzzleException;
 
 class ApiException extends Exception
 {
-    protected const ACCESS_RESTRICTED_STATUS = 'ACCESS_RESTRICTED';
-    protected const INVALID_API_KEY_STATUS = 'INVALID_API_KEY';
-    protected const REVOKED_API_KEY_STATUS = 'REVOKED_API_KEY';
-    protected const INVALID_REQUEST_STATUS = 'INVALID_REQUEST';
-    protected const OUT_OF_RANGE_STATUS = 'OUT_OF_RANGE';
-    protected const QUOTA_REACHED_STATUS = 'QUOTA_REACHED';
-    protected const ZERO_RESULTS_STATUS = 'ZERO_RESULTS';
+    const ACCESS_RESTRICTED_STATUS = 'ACCESS_RESTRICTED';
+    const INVALID_API_KEY_STATUS = 'INVALID_API_KEY';
+    const REVOKED_API_KEY_STATUS = 'REVOKED_API_KEY';
+    const INVALID_REQUEST_STATUS = 'INVALID_REQUEST';
+    const OUT_OF_RANGE_STATUS = 'OUT_OF_RANGE';
+    const QUOTA_REACHED_STATUS = 'QUOTA_REACHED';
+    const ZERO_RESULTS_STATUS = 'ZERO_RESULTS';
 
     /**
      * @var ResponseInterface|null;
