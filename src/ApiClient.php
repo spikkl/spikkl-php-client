@@ -169,7 +169,7 @@ class ApiClient
         }
 
         if ($streetNumber !== null) {
-            [$streetNumber, $streetNumberSuffix] = $validator->validateAndNormalizeStreetNumber($streetNumber, $streetNumberSuffix);
+            list($streetNumber, $streetNumberSuffix) = $validator->validateAndNormalizeStreetNumber($streetNumber, $streetNumberSuffix);
         }
 
         $response = $this->performRequest(
@@ -197,7 +197,7 @@ class ApiClient
     public function reverse($countryIso3Code, $longitude, $latitude)
     {
         $validator = new Validator($countryIso3Code);
-        [$longitude, $latitude] = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
+        list($longitude, $latitude) = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
 
         $response = $this->performRequest(
             'GET',
