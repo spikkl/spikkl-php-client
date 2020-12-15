@@ -17,7 +17,7 @@ To use the Spikkl API client, the following things are required:
 The easiest way to install the Spikkl API client is to require it with [Composer](https://getcomposer.org/doc/00-intro.md).
 
 ```bash
-$ composer require spikkl/spikkl-php-client:^1.1
+$ composer require spikkl/spikkl-php-client:^1.2
 ```
 
 ```json

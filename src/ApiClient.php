@@ -10,13 +10,20 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use Spikkl\Api\Exceptions\ApiException;
+use Spikkl\Api\Exceptions\AccessRestrictedException;
+use Spikkl\Api\Exceptions\InvalidApiKeyException;
+use Spikkl\Api\Exceptions\InvalidRequestException;
+use Spikkl\Api\Exceptions\OutOfRangeException;
+use Spikkl\Api\Exceptions\QuotaReachedException;
+use Spikkl\Api\Exceptions\RevokedApiKeyException;
+use Spikkl\Api\Exceptions\ZeroResultsException;
 
 class ApiClient
 {
     /**
      * Version of the client.
      */
-    const CLIENT_VERSION = '1.0.0';
+    const CLIENT_VERSION = '1.2.2';
 
     /**
      * Endpoint of the remote API.
@@ -77,7 +84,12 @@ class ApiClient
 
         $this->addVersionString("Spikkl/" . self::CLIENT_VERSION);
         $this->addVersionString("PHP/" . phpversion());
-        $this->addVersionString("Guzzle/" . ClientInterface::VERSION);
+
+        if (defined('\GuzzleHttp\ClientInterface::MAJOR_VERSION')) {
+            $this->addVersionString('Guzzle/' . ClientInterface::MAJOR_VERSION);
+        } elseif (defined('\GuzzleHttp\ClientInterface::VERSION')) {
+            $this->addVersionString('Guzzle/' . ClientInterface::VERSION);
+        }
     }
 
     /**
@@ -157,12 +169,12 @@ class ApiClient
         }
 
         if ($streetNumber !== null) {
-            list($streetNumber, $streetNumberSuffix) = $validator->validateAndNormalizeStreetNumber($streetNumber, $streetNumberSuffix);
+            [$streetNumber, $streetNumberSuffix] = $validator->validateAndNormalizeStreetNumber($streetNumber, $streetNumberSuffix);
         }
 
         $response = $this->performRequest(
             'GET',
-            strtolower($countryIso3Code) . DIRECTORY_SEPARATOR . 'lookup.json',
+            strtolower($countryIso3Code) . '/lookup.json',
             [
                 'postal_code' => $postalCode,
                 'street_number' => $streetNumber,
@@ -185,11 +197,11 @@ class ApiClient
     public function reverse($countryIso3Code, $longitude, $latitude)
     {
         $validator = new Validator($countryIso3Code);
-        list($longitude, $latitude) = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
+        [$longitude, $latitude] = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
 
         $response = $this->performRequest(
             'GET',
-            strtolower($countryIso3Code) . DIRECTORY_SEPARATOR . 'reverse.json',
+            strtolower($countryIso3Code) . '/reverse.json',
             [
                 'longitude' => $longitude,
                 'latitude' => $latitude
@@ -217,7 +229,7 @@ class ApiClient
             throw ApiException::create('You have not set an API key. Please use setApiKey() to set the API key.');
         }
 
-        $url = $this->apiEndpoint . DIRECTORY_SEPARATOR . $apiMethod;
+        $url = $this->apiEndpoint . '/' . $apiMethod;
 
         $httpParams = array_merge([
             'key' => $this->apiKey

@@ -123,22 +123,6 @@ class ApiClientTest extends TestCase
     /**
      * @test
      */
-    public function empty_response_throws_exception()
-    {
-        $this->expectException(ApiException::class);
-        $this->expectExceptionMessage('Did not receive any API response.');
-
-        $this->guzzleClient
-            ->expects($this->once())
-            ->method('send')
-            ->willReturn(null);
-
-        $this->apiClient->performRequest('GET', '');
-    }
-
-    /**
-     * @test
-     */
     public function response_body_can_be_read_multiple_time_if_middleware_reads_it_first()
     {
         $response = new Response(200, [], '{"results":[]}');
