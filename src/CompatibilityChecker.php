@@ -7,7 +7,7 @@ use Spikkl\Api\Exceptions\IncompatiblePlatformException;
 
 class CompatibilityChecker
 {
-    const MIN_PHP_VERSION = '5.6.0';
+    const MIN_PHP_VERSION = '7.2.0';
 
     /**
      * Check whether the platform meets the PHP requirements
@@ -17,7 +17,7 @@ class CompatibilityChecker
      *
      * @throws ApiException
      */
-    public function checkCompatibility()
+    public function checkCompatibility(): void
     {
         if ( ! $this->satisfiesPHPVersion()) {
             throw IncompatiblePlatformException::create(
@@ -39,7 +39,7 @@ class CompatibilityChecker
      *
      * @return bool
      */
-    public function satisfiesPHPVersion()
+    public function satisfiesPHPVersion(): bool
     {
         return (bool) version_compare(PHP_VERSION, self::MIN_PHP_VERSION, '>=');
     }
@@ -49,7 +49,7 @@ class CompatibilityChecker
      *
      * @return bool
      */
-    public function satisfiesJSONExtension()
+    public function satisfiesJSONExtension(): bool
     {
         if (function_exists('extension_loaded') && extension_loaded('json')) {
             return true;

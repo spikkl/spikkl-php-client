@@ -27,7 +27,7 @@ class ApiClientTest extends TestCase
      *
      * @throws ApiException
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

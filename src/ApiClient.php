@@ -10,56 +10,22 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\RequestOptions;
 use Spikkl\Api\Exceptions\ApiException;
-use Spikkl\Api\Exceptions\AccessRestrictedException;
-use Spikkl\Api\Exceptions\InvalidApiKeyException;
-use Spikkl\Api\Exceptions\InvalidRequestException;
-use Spikkl\Api\Exceptions\OutOfRangeException;
-use Spikkl\Api\Exceptions\QuotaReachedException;
-use Spikkl\Api\Exceptions\RevokedApiKeyException;
-use Spikkl\Api\Exceptions\ZeroResultsException;
 
 class ApiClient
 {
-    /**
-     * Version of the client.
-     */
-    const CLIENT_VERSION = '1.2.2';
+    const CLIENT_VERSION = '1.3.0';
 
-    /**
-     * Endpoint of the remote API.
-     */
     const API_ENDPOINT = 'https://api.spikkl.nl/geo';
 
-    /**
-     * Default response timeout (in seconds).
-     */
     const DEFAULT_TIMEOUT = 10;
 
-    /**
-     * HTTP Client handling the request.
-     *
-     * @var ClientInterface
-     */
-    protected $httpClient;
+    protected ClientInterface $httpClient;
 
-    /**
-     * Default API endpoint.
-     *
-     * @var string
-     */
-    protected $apiEndpoint = self::API_ENDPOINT;
+    protected string $apiEndpoint = self::API_ENDPOINT;
 
-    /**
-     * The API key to access the service.
-     *
-     * @var string
-     */
-    protected $apiKey;
+    protected string $apiKey;
 
-    /**
-     * @var array
-     */
-    protected $versionStrings = [];
+    protected array $versionStrings = [];
 
     /**
      * ApiClient constructor.
@@ -70,8 +36,7 @@ class ApiClient
      */
     public function __construct(ClientInterface $httpClient = null)
     {
-        $this->httpClient = $httpClient ?
-            $httpClient :
+        $this->httpClient = $httpClient ??
             new Client([
                 RequestOptions::TIMEOUT => self::DEFAULT_TIMEOUT
             ]);
@@ -82,13 +47,11 @@ class ApiClient
         $compatibilityChecker = new CompatibilityChecker();
         $compatibilityChecker->checkCompatibility();
 
-        $this->addVersionString("Spikkl/" . self::CLIENT_VERSION);
-        $this->addVersionString("PHP/" . phpversion());
+        $this->addVersionString('Spikkl/' . self::CLIENT_VERSION);
+        $this->addVersionString('PHP/' . phpversion());
 
         if (defined('\GuzzleHttp\ClientInterface::MAJOR_VERSION')) {
             $this->addVersionString('Guzzle/' . ClientInterface::MAJOR_VERSION);
-        } elseif (defined('\GuzzleHttp\ClientInterface::VERSION')) {
-            $this->addVersionString('Guzzle/' . ClientInterface::VERSION);
         }
     }
 
@@ -101,12 +64,12 @@ class ApiClient
      *
      * @throws ApiException
      */
-    public function setApiKey($apiKey)
+    public function setApiKey(string $apiKey): self
     {
         $apiKey = trim($apiKey);
 
         if ( ! preg_match('/^[0-9a-f]{32}$/', $apiKey)) {
-            throw ApiException::create('Invalid api key: "' . $apiKey . '". Your API key should contain alpha-numeric characters only and must be 32 characters long.');
+            throw ApiException::create(sprintf('Invalid api key: "%s". Your API key should contain alpha-numeric characters only and must be 32 characters long.', $apiKey));
         }
 
         $this->apiKey = $apiKey;
@@ -121,7 +84,7 @@ class ApiClient
      *
      * @return ApiClient
      */
-    public function setApiEndpoint($apiEndpoint)
+    public function setApiEndpoint(string $apiEndpoint): self
     {
         $this->apiEndpoint = rtrim(trim($apiEndpoint), '/');
 
@@ -133,7 +96,7 @@ class ApiClient
      *
      * @return string
      */
-    public function getApiEndpoint()
+    public function getApiEndpoint(): string
     {
         return $this->apiEndpoint;
     }
@@ -143,7 +106,7 @@ class ApiClient
      *
      * @return ApiClient
      */
-    public function addVersionString($versionString)
+    public function addVersionString(string $versionString): self
     {
         $this->versionStrings[] = str_replace([ " ", "\t", "\n", "\r" ], '-', $versionString);
         return $this;
@@ -159,7 +122,7 @@ class ApiClient
      *
      * @throws ApiException
      */
-    public function lookup($countryIso3Code, $postalCode, $streetNumber = null, $streetNumberSuffix = null)
+    public function lookup(string $countryIso3Code, string $postalCode, ?int $streetNumber = null, ?string $streetNumberSuffix = null)
     {
         $validator = new Validator($countryIso3Code);
         $postalCode = $validator->validateAndNormalizePostalCode($postalCode);
@@ -187,14 +150,14 @@ class ApiClient
 
     /**
      * @param string $countryIso3Code
-     * @param string|float $longitude
-     * @param string|float $latitude
+     * @param float $longitude
+     * @param float $latitude
      *
      * @return stdClass
      *
      * @throws ApiException
      */
-    public function reverse($countryIso3Code, $longitude, $latitude)
+    public function reverse(string $countryIso3Code, $longitude, $latitude)
     {
         $validator = new Validator($countryIso3Code);
         list($longitude, $latitude) = $validator->validateAndNormalizeCoordinate($longitude, $latitude);
@@ -223,7 +186,7 @@ class ApiClient
      *
      * @throws ApiException
      */
-    public function performRequest($httpMethod, $apiMethod, $httpParams = [], $httpBody = null)
+    public function performRequest(string $httpMethod, string $apiMethod, array $httpParams = [], ?string $httpBody = null)
     {
         if (empty($this->apiKey)) {
             throw ApiException::create('You have not set an API key. Please use setApiKey() to set the API key.');
@@ -274,7 +237,7 @@ class ApiClient
      *
      * @throws ApiException
      */
-    private function parseResponseBody(ResponseInterface $response)
+    private function parseResponseBody(ResponseInterface $response): ?stdClass
     {
         $body = (string) $response->getBody();
 
@@ -285,7 +248,7 @@ class ApiClient
         $object = @json_decode($body);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw ApiException::create('Unable to decode Spikkl response: "' . $body . '".');
+            throw ApiException::create(sprintf('Unable to decode Spikkl response: "%s".', $body));
         }
 
         if ($response->getStatusCode() >= 400) {

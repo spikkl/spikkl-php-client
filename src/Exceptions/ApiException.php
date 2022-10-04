@@ -21,25 +21,25 @@ class ApiException extends Exception
     /**
      * @var ResponseInterface|null;
      */
-    protected $response;
+    protected ?ResponseInterface $response = null;
 
     /**
      * ApiException constructor.
      *
      * @param string $message
-     * @param int $code
+     * @param int|null $code
      * @param ResponseInterface|null $response
      * @param Throwable|null $previous
      */
     public function __construct(
-        $message = '',
-        $code = 0,
+        string $message = '',
+        ?int $code = null,
         ResponseInterface $response = null,
         Throwable $previous = null
     ) {
         $this->response = $response;
 
-        parent::__construct($message, $code, $previous);
+        parent::__construct($message, $code ?? 0, $previous);
     }
 
     /**
@@ -52,10 +52,10 @@ class ApiException extends Exception
      * @return ApiException
      */
     public static function create(
-        $message,
-        $code = null,
+        string $message,
+        ?int $code = null,
         Throwable $previous = null
-    ) {
+    ): self {
         return new static($message, $code, null, $previous);
     }
 
@@ -69,7 +69,7 @@ class ApiException extends Exception
      *
      * @throws ApiException
      */
-    public static function createFromResponse($response, Throwable $previous = null)
+    public static function createFromResponse(ResponseInterface $response, Throwable $previous = null): self
     {
         $object = static::parseResponseBody($response);
 
@@ -126,7 +126,7 @@ class ApiException extends Exception
      *
      * @throws ApiException
      */
-    public static function createFromGuzzleException($exception, Throwable $previous = null)
+    public static function createFromGuzzleException(GuzzleException $exception, Throwable $previous = null): self
     {
         if (method_exists($exception, 'hasResponse') && method_exists($exception, 'getResponse')) {
             if ($exception->hasResponse()) {
@@ -146,14 +146,14 @@ class ApiException extends Exception
      *
      * @throws ApiException
      */
-    protected static function parseResponseBody($response)
+    protected static function parseResponseBody(ResponseInterface $response)
     {
         $body = (string) $response->getBody();
 
         $object = @json_decode($body);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new static("Unable to decode Spikkl response: '{body}'.");
+            throw new static(sprintf('Unable to decode Spikkl response: "%s".', $body));
         }
 
         return $object;
@@ -166,7 +166,7 @@ class ApiException extends Exception
      *
      * @return bool
      */
-    protected static function isErrorApiResponse($response)
+    protected static function isErrorApiResponse($response): bool
     {
         return property_exists($response, 'status_code') &&
                property_exists($response, 'status') &&
@@ -178,7 +178,7 @@ class ApiException extends Exception
      *
      * @return ResponseInterface|null
      */
-    public function getResponse()
+    public function getResponse(): ?ResponseInterface
     {
         return $this->response;
     }
@@ -188,7 +188,7 @@ class ApiException extends Exception
      *
      * @return bool
      */
-    public function hasResponse()
+    public function hasResponse(): bool
     {
         return ! ($this->response === null);
     }
